@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		
+		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<!-- http://www.springframework.org/schema/beans/spring-beans-4.3.xsd -->
+	<!--导入并解析src目录下properties文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties" />
+
+	<!-- 配置C3P0数据源 -->
+<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<!-- 数据连接信息 -->
+		<property name="jdbcUrl" value="${jdbcUrl}"></property>
+		<property name="driverClass" value="${driverClass}"></property>
+		<property name="user" value="${user}"></property>
+		<property name="password" value="${password}"></property>
+	</bean>
+	
+	<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 数据库相关配置 -->
+		<property name="dataSource" ref="dataSource" />
+		
+		<property name="mapperLocations" value="classpath*:com/**/*.xml"/>
+		
+	</bean>	
+	 <!-- 借口的代理实现类 并注入sqlsessionFactory -->
+   <bean  class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+  <property name="basePackage" value="com.dao"></property>
+  <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean"></property>
+   </bean>
+   
+   
+	<!-- 开启注解支持 -->
+	<context:component-scan base-package="com" />
+	<!-- 	开启事务注解支持 -->
+	<bean id="tx" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="tx" proxy-target-class="true"/>
+	
+
+
+</beans>

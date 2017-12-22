@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- <!DOCTYPE mapper SYSTEM "D:\MyEclipse/dtd/mybatis-3-mapper.dtd"> -->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.dao.ICarDao">
+
+
+	<sql id="selcetAll">
+
+		SELECT *
+		FROM t_car
+	</sql>
+
+	<insert id="addCar" parameterType="com.entity.carEntity">
+
+		INSERT INTO
+		t_car(id,name,color,price,time,shopId)
+		VALUES (t_car_seq.nextval,#{name},#{color},#{price},#{time},#{shopid})
+
+	</insert>
+	<update id="updateCar" parameterType="com.entity.carEntity">
+
+		UPDATE t_car SET
+		name = #{name},
+		color = #{color},
+		price = #{price},
+		time = #{time},
+		shopid = #{shopid}
+		WHERE
+		id = #{id}
+
+	</update>
+	<delete id="deleteCar" parameterType="int">
+		delete from t_car
+		where
+		id =
+		#{id}
+
+
+	</delete>
+
+	<select id="findAll" resultType="com.entity.carEntity">
+		<include refid="selcetAll" />
+
+
+	</select>
+
+	<select id="findById" parameterType="int" resultType="com.entity.carEntity">
+		<include refid="selcetAll" />
+		where id= #{id}
+
+	</select>
+	<select id="findByName" parameterType="string" resultType="com.entity.carEntity">
+		<include refid="selcetAll" />
+		where name= #{name}
+
+	</select>
+	<select id="findByIdShop" parameterType="int" resultType="com.entity.shopEntity">
+		select
+		* from t_shop
+		where id= #{id}
+
+	</select>
+
+
+	<select id="findAllShopByCarName" parameterType="string"
+		resultType="java.util.HashMap">
+
+		select tt.name as cname, ss.name as sname , ss.address as address , ss.phoneNo as phoneNo from
+		(select shopid as sid,id as id from t_car t where t.name like #{name})yy
+		left join t_car tt on yy.id = tt.id
+		left join t_shop ss on yy.sid = ss.id
+	</select>
+
+</mapper>
